@@ -10,6 +10,23 @@ You could have a production-ready Jenkins Master if you:
  
 ## Instructions
 
+### Create a ssh private and public key pair with ssh-keygen
+
+```
+SSH_LOCAL_CONFIG_DIR="$HOME/.ssh"
+mkdir "$SSH_LOCAL_CONFIG_DIR"
+ssh-keygen -t rsa -m PEM -C "jenkins" -f "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa
+cat "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa
+```
+
+Copy the private key to `jenkins-master/files/master-container/sample-private-key.txt`
+
+```
+cat "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa.pub
+```
+
+Copy the public key to your Jenkins Agent (if you are using a GCE Instance, paste the public key into the ssh metadata).
+
 ### Set Terraform Variables in a terraform.tfvars file 
 
 Use a `terraform.tfvars` file to setup at least the following variables:
