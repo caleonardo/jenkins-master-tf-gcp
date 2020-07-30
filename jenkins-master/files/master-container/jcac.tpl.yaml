@@ -15,7 +15,7 @@ jenkins:
               emailAddress: ${tpl_JENKINS_WEB_UI_ADMIN_EMAIL}
   nodes:
   - permanent:
-      labelString: "gce-agent"
+      labelString: "gcp-agent"
       launcher:
         ssh:
           credentialsId: "ssh_private_key_to_connect_to_${tpl_JENKINS_AGENT_NAME}"
@@ -24,8 +24,38 @@ jenkins:
           sshHostKeyVerificationStrategy:
             manuallyTrustedKeyVerificationStrategy:
               requireInitialManualTrust: false
-      name: "jenkins-ssh-agent-${tpl_JENKINS_AGENT_NAME}"
+      name: "jenkins-ssh-agent-${tpl_JENKINS_AGENT_NAME}-GCE-Bootstrap-1"
       nodeDescription: "SSH Jenkins Agent ${tpl_JENKINS_AGENT_NAME}"
+      numExecutors: 1
+      remoteFS: ${tpl_JENKINS_AGENT_REMOTE_DIR}
+      retentionStrategy: "always"
+  - permanent:
+      labelString: "gcp-agent"
+      launcher:
+        ssh:
+          credentialsId: "ssh_private_key_to_connect_to_${tpl_JENKINS_AGENT_NAME}"
+          host: 10.3.0.6
+          port: 22
+          sshHostKeyVerificationStrategy:
+            manuallyTrustedKeyVerificationStrategy:
+              requireInitialManualTrust: false
+      name: "jenkins-ssh-agent-${tpl_JENKINS_AGENT_NAME}-333"
+      nodeDescription: "SSH Jenkins Agent ${tpl_JENKINS_AGENT_NAME} 333"
+      numExecutors: 1
+      remoteFS: ${tpl_JENKINS_AGENT_REMOTE_DIR}
+      retentionStrategy: "always"
+  - permanent:
+      labelString: "gcp-agent"
+      launcher:
+        ssh:
+          credentialsId: "ssh_private_key_to_connect_to_${tpl_JENKINS_AGENT_NAME}"
+          host: 10.3.0.4
+          port: 22
+          sshHostKeyVerificationStrategy:
+            manuallyTrustedKeyVerificationStrategy:
+              requireInitialManualTrust: false
+      name: "jenkins-ssh-agent-${tpl_JENKINS_AGENT_NAME}-444"
+      nodeDescription: "SSH Jenkins Agent ${tpl_JENKINS_AGENT_NAME} 444"
       numExecutors: 1
       remoteFS: ${tpl_JENKINS_AGENT_REMOTE_DIR}
       retentionStrategy: "always"
@@ -57,6 +87,22 @@ jobs:
         triggers {
           periodic(1)
         }
+      }
+  - script: >
+      pipelineJob('pipeline') {
+      agent { label 'gcp-agent​' }
+          definition {
+              cpsScm {
+                  scriptPath 'Jenkinsfile'
+                  scm {
+                    git {
+                        remote { url 'https://github.com/caleonardo/jenkins-pipeline-test-01' }
+                        branch '*/master'
+                        extensions {}
+                    }
+                  }
+              }
+          }
       }
 credentials:
   system:

@@ -1,12 +1,18 @@
 # Overview
  
-The `jenkins-master-tf-gcp` Terraform module deploys a Jenkins Master in a new project in GCP using configuration as code in a  jcac.yaml file
+This `jenkins-master-tf-gcp` Terraform module deploys a Jenkins Master in a container.
+
+The Jenkins Master container runs inside a GCE instance in a new GCP project and uses the configuration as code provided in the `jcac.yaml` file
 
 **WARNING: THE JENKINS MASTER DEPLOYED IS NOT MEANT TO BE A PRODUCTION SYSTEM.**
 
 You could have a production-ready Jenkins Master if you:
  - Create your own SSH Public/Private keys
  - Set real values in the `jcac.yaml` file, especially for the `securityRealm` and `privateKey` sections
+ 
+## Requirements
+
+ - VPN connection 
  
 ## Instructions
 

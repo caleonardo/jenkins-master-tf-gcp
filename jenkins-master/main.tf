@@ -63,13 +63,13 @@ data "template_file" "jenkins_master_jcac_yaml" {
 
     # Jenkins Master web UI login
     tpl_JENKINS_WEB_UI_ADMIN_USER   = "admin"
-    tpl_JENKINS_WEB_UI_ADMIN_PASSWD = "admin"
+    tpl_JENKINS_WEB_UI_ADMIN_PASSWD = "adminadminadmin"
     tpl_JENKINS_WEB_UI_ADMIN_EMAIL  = "admin@admin.com"
 
     # Pipeline Variables: Github repository we want Jenkins Master to connect to
-    tpl_GITHUB_USERNAME             = "<github-username>"
+    tpl_GITHUB_USERNAME             = "caleonardo"
     tpl_GITHUB_TOKEN                = "<github-token>"
-    tpl_GITHUB_REPO_NAME            = "solutions-terraform-jenkins-gitops"
+    tpl_GITHUB_REPO_NAME            = "jenkins-pipeline-test-01"
 
     tpl_RSA_PRIVATE_KEY = file("${path.module}/files/master-container/sample-private-key.txt")
   }
@@ -102,10 +102,12 @@ resource "google_compute_instance" "jenkins_master_gce_instance" {
   }
 
   network_interface {
-    network = google_compute_network.jenkins_master.self_link
+    // Internal and static IP configuration
+    subnetwork = google_compute_subnetwork.jenkins_master_subnet.self_link
+    network_ip = google_compute_address.jenkins_master_gce_static_ip.address
 
     access_config {
-      // Ephemeral IP
+      // External and ephemeral IP configuration
       // TODO(caleonardo): This must not have an external IP. Only use for testing while developing a VPN resource
     }
   }
@@ -170,6 +172,26 @@ resource "google_compute_firewall" "fw_allow_ssh_into_jenkins_agent" {
 resource "google_compute_network" "jenkins_master" {
   project = module.jenkins_master_project.project_id
   name    = "vpc-b-jenkinsmaster"
+}
+
+resource "google_compute_address" "jenkins_master_gce_static_ip" {
+  // This internal IP address needs to be accessible via the VPN tunnel
+  project       = module.jenkins_master_project.project_id
+  name         = "jenkins-master-gce-static-ip"
+  subnetwork   = google_compute_subnetwork.jenkins_master_subnet.self_link
+  address_type = "INTERNAL"
+  address      = "10.1.0.6"
+  region       = var.default_region
+  purpose      = "GCE_ENDPOINT"
+  description  = "The static Internal IP address of the Jenkins Agent."
+}
+
+resource "google_compute_subnetwork" "jenkins_master_subnet" {
+  project       = module.jenkins_master_project.project_id
+  name          = "jenkins-masters-subnet"
+  ip_cidr_range = "10.1.0.0/24"
+  region        = var.default_region
+  network       = google_compute_network.jenkins_master.self_link
 }
 
 /******************************************

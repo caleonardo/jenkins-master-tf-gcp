@@ -67,7 +67,7 @@ variable "jenkins_master_sa_email" {
 }
 
 variable "tpl_jenkins_agent_ip_addr" {
-  description = "The IP Address of the Jenkins Agent. This value is used in the jcac.yaml file."
+  description = "The IP Address of the Jenkins Agent. This value is used in the jcac.yaml file. This IP Address is reachable through the VPN that exists between on-prem (Jenkins Master) and GCP (CICD Project, where the Jenkins Agent is located)."
   type        = string
 }
 
@@ -96,12 +96,12 @@ variable "activate_apis" {
     "servicenetworking.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
-    // "bigquery.googleapis.com", // TODO(caleonardo): confirm if Jenkins Master Project needs BQ
+    "bigquery.googleapis.com", // TODO(caleonardo): confirm if Jenkins Master Project needs BQ
     "cloudresourcemanager.googleapis.com",
     "cloudbilling.googleapis.com",
     "iam.googleapis.com",
     "admin.googleapis.com",
-    // "appengine.googleapis.com", // TODO(caleonardo): confirm if Jenkins Master Project needs GAE
+    "appengine.googleapis.com", // TODO(caleonardo): confirm if Jenkins Master Project needs GAE
     "storage-api.googleapis.com",
     "cloudkms.googleapis.com"
   ]
