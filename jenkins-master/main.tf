@@ -26,7 +26,7 @@ locals {
 *******************************************/
 module "jenkins_master_project" {
   source                      = "terraform-google-modules/project-factory/google"
-  version                     = "~> 7.0" // TODO(caleonardo): use latest current versions so that we are up to date
+  version                     = "~> 9.2"
   name                        = local.jenkins_master_project_name
   random_project_id           = true
   disable_services_on_destroy = false
@@ -57,19 +57,22 @@ data "template_file" "jenkins_master_jcac_yaml" {
   template = file("${path.module}/files/master-container/jcac.tpl.yaml")
   vars = {
     # Jenkins Agent Admin
-    tpl_JENKINS_AGENT_NAME          = "Agent1"
-    tpl_JENKINS_AGENT_IP_ADDR       = var.tpl_jenkins_agent_ip_addr
-    tpl_JENKINS_AGENT_REMOTE_DIR    = "/home/jenkins/jenkins_agent_dir"
+    tpl_JENKINS_AGENT_NAME       = var.tpl_jenkins_agent_name
+    tpl_JENKINS_AGENT_IP_ADDR    = var.tpl_jenkins_agent_ip_addr
+    tpl_JENKINS_AGENT_REMOTE_DIR = "/home/jenkins/jenkins_agent_dir"
 
     # Jenkins Master web UI login
-    tpl_JENKINS_WEB_UI_ADMIN_USER   = "admin"
-    tpl_JENKINS_WEB_UI_ADMIN_PASSWD = "adminadminadmin"
-    tpl_JENKINS_WEB_UI_ADMIN_EMAIL  = "admin@admin.com"
+    tpl_JENKINS_WEB_UI_ADMIN_USER   = var.tpl_jenkins_web_ui_admin_user
+    tpl_JENKINS_WEB_UI_ADMIN_PASSWD = var.tpl_jenkins_web_ui_admin_password
+    tpl_JENKINS_WEB_UI_ADMIN_EMAIL  = var.tpl_jenkins_web_ui_admin_email
 
     # Pipeline Variables: Github repository we want Jenkins Master to connect to
-    tpl_GITHUB_USERNAME             = "caleonardo"
-    tpl_GITHUB_TOKEN                = "<github-token>"
-    tpl_GITHUB_REPO_NAME            = "jenkins-pipeline-test-01"
+    tpl_GITHUB_USERNAME  = var.tpl_github_username
+    tpl_GITHUB_TOKEN     = var.tpl_github_token
+    tpl_GITHUB_REPO_ORG  = var.tpl_github_repo_org
+    tpl_GITHUB_REPO_ENVS = var.tpl_github_repo_environments
+    tpl_GITHUB_REPO_NET  = var.tpl_github_repo_networks
+    tpl_GITHUB_REPO_PRJ  = var.tpl_github_repo_projects
 
     tpl_RSA_PRIVATE_KEY = file("${path.module}/files/master-container/sample-private-key.txt")
   }
@@ -79,7 +82,6 @@ data "template_file" "jenkins_master_jcac_yaml" {
 data "template_file" "jenkins_master_gce_startup_script" {
   template = file("${path.module}/files/jenkins_gce_startup_script.tpl.sh")
   vars = {
-//    DOCKERFILE  = data.template_file.jenkins_master_dockerfile.rendered
     tpl_DOCKERFILE  = file("${path.module}/files/master-container/Dockerfile")
     tpl_JCAC_YAML   = data.template_file.jenkins_master_jcac_yaml.rendered
     tpl_PLUGINS_TXT = file("${path.module}/files/master-container/plugins.txt")
@@ -115,7 +117,6 @@ resource "google_compute_instance" "jenkins_master_gce_instance" {
   // Adding ssh public keys to the GCE instance metadata, so the Jenkins Master can connect to this Master
   metadata = {
     enable-oslogin = "true"
-//    ssh-keys       = var.jenkins_master_gce_ssh_pub_key
   }
 
   metadata_startup_script = data.template_file.jenkins_master_gce_startup_script.rendered
@@ -158,7 +159,6 @@ resource "google_compute_firewall" "fw_allow_ssh_into_jenkins_agent" {
   name          = "fw-${google_compute_network.jenkins_master.name}-1000-i-a-all-all-tcp-22"
   description   = "Allow SSH communication to the Jenkins Master."
   network       = google_compute_network.jenkins_master.name
-//  source_ranges = var.jenkins_master_ip_addresses
   source_ranges = ["0.0.0.0/0"]
   target_tags   = [local.jenkins_gce_fw_tags[1]]
   priority      = 1000
@@ -176,7 +176,7 @@ resource "google_compute_network" "jenkins_master" {
 
 resource "google_compute_address" "jenkins_master_gce_static_ip" {
   // This internal IP address needs to be accessible via the VPN tunnel
-  project       = module.jenkins_master_project.project_id
+  project      = module.jenkins_master_project.project_id
   name         = "jenkins-master-gce-static-ip"
   subnetwork   = google_compute_subnetwork.jenkins_master_subnet.self_link
   address_type = "INTERNAL"
