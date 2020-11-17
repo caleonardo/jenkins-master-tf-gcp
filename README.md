@@ -9,29 +9,35 @@ The Jenkins Master container runs inside a GCE instance in a new GCP project and
 You could have a production-ready Jenkins Master if you:
  - Create your own SSH Public/Private keys
  - Set real values in the `jcac.yaml` file, especially for the `securityRealm` and `privateKey` sections
- 
-## Requirements
 
- - VPN connection 
- 
 ## Instructions
 
 ### Create a ssh private and public key pair with ssh-keygen
 
 ```
+export tpl_JENKINS_AGENT_NAME=cft_agent
 SSH_LOCAL_CONFIG_DIR="$HOME/.ssh"
 mkdir "$SSH_LOCAL_CONFIG_DIR"
-ssh-keygen -t rsa -m PEM -C "jenkins" -f "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa
+ssh-keygen -t rsa -m PEM -C "jenkins" -f "$SSH_LOCAL_CONFIG_DIR"/jenkins_"${tpl_JENKINS_AGENT_NAME}"_rsa
 cat "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa
 ```
 
 Copy the private key to `jenkins-master/files/master-container/sample-private-key.txt`
+**Note:** The identantion **must** be the same as in the file (20 whitespaces) like:
+
+```
+-----BEGIN RSA PRIVATE KEY-----
+                    your key
+                    -----END RSA PRIVATE KEY-----
+```
+
+See the value of public key:
 
 ```
 cat "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa.pub
 ```
 
-Copy the public key to your Jenkins Agent (if you are using a GCE Instance, paste the public key into the ssh metadata).
+Copy the public key to use as your Jenkins Agent public key.
 
 ### Set Terraform Variables in a terraform.tfvars file 
 
@@ -55,7 +61,8 @@ Error: google: could not find default credentials. See https://developers.google
 ```
 
 ### Run Terraform
-``
+
+``bash
 cd jenkins-master/
 terraform init
 terraform plan

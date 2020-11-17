@@ -66,8 +66,65 @@ variable "jenkins_master_sa_email" {
   default     = "jenkins-master-gce"
 }
 
+/* ----------------------------------------
+    Specific to Jenkins Master Instance
+   ---------------------------------------- */
+
+variable "tpl_jenkins_agent_name" {
+  description = "The name of the Jenkins Agent. This value is used in the jcac.yaml file."
+  type        = string
+  default     = "jenkins-agent-01"
+}
+
 variable "tpl_jenkins_agent_ip_addr" {
   description = "The IP Address of the Jenkins Agent. This value is used in the jcac.yaml file. This IP Address is reachable through the VPN that exists between on-prem (Jenkins Master) and GCP (CICD Project, where the Jenkins Agent is located)."
+  type        = string
+}
+
+variable "tpl_jenkins_web_ui_admin_user" {
+  description = "The admin user created in the instance. This value is used in the jcac.yaml file."
+  type        = string
+  default     = "admin"
+}
+
+variable "tpl_jenkins_web_ui_admin_password" {
+  description = "The admin user password in the instance. This value is used in the jcac.yaml file."
+  type        = string
+}
+
+variable "tpl_jenkins_web_ui_admin_email" {
+  description = "The admin user password in the instance. This value is used in the jcac.yaml file."
+  type        = string
+  default     = "admin@admin.com"
+}
+
+variable "tpl_github_username" {
+  description = "The Github user used to connect with the repositories. This value is used in the jcac.yaml file."
+  type        = string
+}
+
+variable "tpl_github_token" {
+  description = "The Github user token used to connect with the repositories. To genrate one follow the instructions on here: https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token .This value is used in the jcac.yaml file."
+  type        = string
+}
+
+variable "tpl_github_repo_org" {
+  description = "The org Github repository name. This value is used in the jcac.yaml file."
+  type        = string
+}
+
+variable "tpl_github_repo_environments" {
+  description = "The environments Github repository name. This value is used in the jcac.yaml file."
+  type        = string
+}
+
+variable "tpl_github_repo_networks" {
+  description = "The networks Github repository name. This value is used in the jcac.yaml file."
+  type        = string
+}
+
+variable "tpl_github_repo_projects" {
+  description = "The projects Github repository name. This value is used in the jcac.yaml file."
   type        = string
 }
 
