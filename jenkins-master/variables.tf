@@ -79,6 +79,7 @@ variable "tpl_jenkins_agent_name" {
 variable "tpl_jenkins_agent_ip_addr" {
   description = "The IP Address of the Jenkins Agent. This value is used in the jcac.yaml file. This IP Address is reachable through the VPN that exists between on-prem (Jenkins Master) and GCP (CICD Project, where the Jenkins Agent is located)."
   type        = string
+  default     = "172.16.1.6"
 }
 
 variable "tpl_jenkins_web_ui_admin_user" {
@@ -179,11 +180,11 @@ variable "folder_id" {
 variable "terraform_version" {
   description = "Default terraform version."
   type        = string
-  default     = "0.12.24"
+  default     = "0.13.5"
 }
 
 variable "terraform_version_sha256sum" {
   description = "sha256sum for default terraform version."
   type        = string
-  default     = "602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11"
+  default     = "f7b7a7b1bfbf5d78151cfe3d1d463140b5fd6a354e71a7de2b5644e652ca5147"
 }

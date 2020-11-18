@@ -1,4 +1,4 @@
 -----BEGIN RSA PRIVATE KEY-----
                     PUT HERE THE PRIVATE KEY corresponding to the public key
-                    used by the Jenkins Agent
+                    used by the Jenkins Agent AND keep the indentation
                     -----END RSA PRIVATE KEY-----
