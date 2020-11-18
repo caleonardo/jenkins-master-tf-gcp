@@ -22,8 +22,8 @@ ssh-keygen -t rsa -m PEM -C "jenkins" -f "$SSH_LOCAL_CONFIG_DIR"/jenkins_"${tpl_
 cat "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa
 ```
 
-Copy the private key to `jenkins-master/files/master-container/sample-private-key.txt`
-**Note:** The identantion **must** be the same as in the file (20 whitespaces) like:
+Copy the generated private key to the file `jenkins-master/files/master-container/sample-private-key.txt`
+**maintaining the same identation** of 20 whitespaces after the first line. The identation **must** be like
 
 ```
 -----BEGIN RSA PRIVATE KEY-----
@@ -31,13 +31,13 @@ Copy the private key to `jenkins-master/files/master-container/sample-private-ke
                     -----END RSA PRIVATE KEY-----
 ```
 
-See the value of public key:
+After that see the value of public key:
 
 ```
 cat "$SSH_LOCAL_CONFIG_DIR"/jenkins"${tpl_JENKINS_AGENT_NAME}"_rsa.pub
 ```
 
-Copy the public key to use as your Jenkins Agent public key.
+Save the public key for later use as your Jenkins Agent public key.
 
 ### Set Terraform Variables in a terraform.tfvars file 
 
@@ -48,7 +48,13 @@ org_id = "000000000000"
 billing_account = "000000-000000-000000"
 folder_id = "000000000000"
 group_org_admins = "all-admin@yourdomain.com"
-tpl_jenkins_agent_ip_addr = "xxx.xxx.xxx.xxx"
+tpl_jenkins_web_ui_admin_password = "password"
+tpl_github_username = "user-git"
+tpl_github_token = "generated_token"
+tpl_github_repo_org = "YOUR_NEW_REPO-1-org"
+tpl_github_repo_environments = "YOUR_NEW_REPO-2-environments"
+tpl_github_repo_networks = "YOUR_NEW_REPO-3-networks"
+tpl_github_repo_projects = "YOUR_NEW_REPO-4-projects"
 ```
 
 ### Get credentials from gcloud
@@ -62,17 +68,26 @@ Error: google: could not find default credentials. See https://developers.google
 
 ### Run Terraform
 
-``bash
+```bash
 cd jenkins-master/
 terraform init
 terraform plan
 terraform apply
-``
+```
 
 The module will create a GCP Project and a GCE instance, among other elements. Once the Instance is created, a container is deployed using the startup script, which might take around 5 to 10 minutes to complete.
 
-When the startup script completes its job, you can open a browser window using the External IP of the newly created Jenkins Master on the port `8080` and using the username `admin` and password `admin` (as configures in the `securityRealm` section of the `jcac.yaml`) :
- - `http://External_IP:8080`
+When the startup script completes its job, you can access the instance via SSH IAP tunneling using the following command:
+
+```bash
+export master_project_id=<your-jenkins-master-project>
+gcloud compute ssh jenkins-master-01 \
+--project ${master_project_id} \
+--zone us-central1-a \
+-- -L 8080:localhost:8080
+```
+
+After that open the browser and access `http://localhost:8080/`. Use your username (default value is `admin`) and password used in the deploy to login.
 
 # TROUBLESHOOTING:
 

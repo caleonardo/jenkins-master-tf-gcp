@@ -16,15 +16,15 @@
 | project\_labels | Labels to apply to the project. | `map(string)` | `{}` | no |
 | project\_prefix | Name prefix to use for projects created. | `string` | `"prj"` | no |
 | service\_account\_prefix | Name prefix to use for service accounts. | `string` | `"sa"` | no |
-| terraform\_version | Default terraform version. | `string` | `"0.12.24"` | no |
-| terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11"` | no |
+| terraform\_version | Default terraform version. | `string` | `"0.13.5"` | no |
+| terraform\_version\_sha256sum | sha256sum for default terraform version. | `string` | `"f7b7a7b1bfbf5d78151cfe3d1d463140b5fd6a354e71a7de2b5644e652ca5147"` | no |
 | tpl\_github\_repo\_environments | The environments Github repository name. This value is used in the jcac.yaml file. | `string` | n/a | yes |
 | tpl\_github\_repo\_networks | The networks Github repository name. This value is used in the jcac.yaml file. | `string` | n/a | yes |
 | tpl\_github\_repo\_org | The org Github repository name. This value is used in the jcac.yaml file. | `string` | n/a | yes |
 | tpl\_github\_repo\_projects | The projects Github repository name. This value is used in the jcac.yaml file. | `string` | n/a | yes |
 | tpl\_github\_token | The Github user token used to connect with the repositories. To genrate one follow the instructions on here: https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token .This value is used in the jcac.yaml file. | `string` | n/a | yes |
 | tpl\_github\_username | The Github user used to connect with the repositories. This value is used in the jcac.yaml file. | `string` | n/a | yes |
-| tpl\_jenkins\_agent\_ip\_addr | The IP Address of the Jenkins Agent. This value is used in the jcac.yaml file. This IP Address is reachable through the VPN that exists between on-prem (Jenkins Master) and GCP (CICD Project, where the Jenkins Agent is located). | `string` | n/a | yes |
+| tpl\_jenkins\_agent\_ip\_addr | The IP Address of the Jenkins Agent. This value is used in the jcac.yaml file. This IP Address is reachable through the VPN that exists between on-prem (Jenkins Master) and GCP (CICD Project, where the Jenkins Agent is located). | `string` | `"172.16.1.6"` | no |
 | tpl\_jenkins\_agent\_name | The name of the Jenkins Agent. This value is used in the jcac.yaml file. | `string` | `"jenkins-agent-01"` | no |
 | tpl\_jenkins\_web\_ui\_admin\_email | The admin user password in the instance. This value is used in the jcac.yaml file. | `string` | `"admin@admin.com"` | no |
 | tpl\_jenkins\_web\_ui\_admin\_password | The admin user password in the instance. This value is used in the jcac.yaml file. | `string` | n/a | yes |

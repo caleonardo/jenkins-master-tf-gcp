@@ -107,11 +107,6 @@ resource "google_compute_instance" "jenkins_master_gce_instance" {
     // Internal and static IP configuration
     subnetwork = google_compute_subnetwork.jenkins_master_subnet.self_link
     network_ip = google_compute_address.jenkins_master_gce_static_ip.address
-
-    access_config {
-      // External and ephemeral IP configuration
-      // TODO(caleonardo): This must not have an external IP. Only use for testing while developing a VPN resource
-    }
   }
 
   // Adding ssh public keys to the GCE instance metadata, so the Jenkins Master can connect to this Master
